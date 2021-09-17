@@ -22,38 +22,58 @@ using namespace vex;
 
 int main()
 {
-  // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  int deadband = 5;
+  while (true)
+  {
+    int updown = controller1.Axis3.position() ^ 3 / 20000;
+    int leftright = controller1.Axis4.position() ^ 3 / 20000;
 
-  while (true) {
-    // Get the velocity percentage of the left motor. (Axis3)
-    int leftMotorSpeed = controller1.Axis3.position() ^ 3 / 10000;
-    // Get the velocity percentage of the right motor. (Axis2)
-    int rightMotorSpeed = controller1.Axis2.position() ^ 3 / 10000;
+    int leftVelocity = 0;
+    int rightVelocity = 0;
 
-    // Set the speed of the left motor. If the value is less than the deadband,
-    // set it to zero.
-    if (abs(leftMotorSpeed) < deadband) {
-      // Set the speed to zero.
-      leftMotor.setVelocity(0, percent);
-    } else {
-      // Set the speed to leftMotorSpeed
-      leftMotor.setVelocity(leftMotorSpeed, percent);
+    leftVelocity = updown;
+    rightVelocity = updown;
+
+    if (updown == 0)
+    {
+      if (leftright > 0)
+      {
+        leftVelocity += abs(leftright);
+        rightVelocity -= abs(leftright);
+      }
+      else if (leftright < 0)
+      {
+        rightVelocity += abs(leftright);
+        leftVelocity -= abs(leftright);
+      }
+    }
+    else if (updown > 0)
+    {
+      if (leftright > 0)
+      {
+        leftVelocity += abs(leftright);
+      }
+      else if (leftright < 0)
+      {
+        rightVelocity += abs(leftright);
+      }
+    }
+    else if (updown < 0)
+    {
+      if (leftright > 0)
+      {
+        leftVelocity -= abs(leftright);
+      }
+      else if (leftright < 0)
+      {
+        rightVelocity -= abs(leftright);
+      }
     }
 
-    // Set the speed of the right motor. If the value is less than the deadband,
-    // set it to zero.
-    if (abs(rightMotorSpeed) < deadband) {
-      // Set the speed to zero
-      rightMotor.setVelocity(0, percent);
-    } else {
-      // Set the speed to rightMotorSpeed
-      rightMotor.setVelocity(rightMotorSpeed, percent);
-    }
+    leftMotor.setVelocity(leftVelocity, percent);
+    rightMotor.setVelocity(rightVelocity, percent);
 
-    // Spin both motors in the forward direction.
     leftMotor.spin(forward);
     rightMotor.spin(forward);
 
